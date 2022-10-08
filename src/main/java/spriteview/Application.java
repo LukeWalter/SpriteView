@@ -30,7 +30,7 @@ public class Application {
         screen.setBackground(Color.WHITE);
 
         this.spv = new SpriteView(spriteRegister);
-        this.scv = new ScreenView();
+        this.scv = new ScreenView(spv, spriteRegister);
 
         screen.add(scv, BorderLayout.CENTER);
         screen.add(spv, BorderLayout.CENTER);
@@ -44,6 +44,7 @@ public class Application {
 
     public void update() {
         spv.updateComponent();
+        scv.updateComponent();
 
     } // update
 

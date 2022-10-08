@@ -12,6 +12,9 @@ public class SpriteView extends JPanel {
     OAM spriteRegister;
     BufferedImage spriteSheet;
 
+    Point p;
+    Dimension bounds;
+
     public SpriteView(OAM sprite) {
 
         super();
@@ -24,18 +27,22 @@ public class SpriteView extends JPanel {
         try {
 
             File src = new File("res/donkeykong.bmp");
-            System.out.println(src.exists());
             this.spriteSheet = ImageIO.read(src);
-            System.out.println(spriteSheet);
 
         } catch (IOException ioe) {
-
-
         } // try
+
+        p = new Point(0, 0);
+        bounds = new Dimension(8, 8);
 
     } // Constructor
 
     public void updateComponent() {
+
+        int tileID = spriteRegister.baseIndex();
+        p = new Point((tileID % 32) * 8, (tileID / 32) * 8);
+        bounds = spriteRegister.dimensions();
+
         revalidate();
         repaint();
 
@@ -52,10 +59,6 @@ public class SpriteView extends JPanel {
         g2d.setColor(Color.BLUE);
         g2d.setStroke(new BasicStroke(2f));
 
-        int tileID = spriteRegister.baseIndex();
-        Point p = new Point((tileID % 32) * 8, (tileID / 32) * 8);
-        Dimension bounds = spriteRegister.dimensions();
-
         int x = (int)(p.getX());
         int y = (int)(p.getY());
 
@@ -68,5 +71,15 @@ public class SpriteView extends JPanel {
         g2d.drawLine(x + width, y, x, y);
 
     } // paintComponent
+
+    public BufferedImage generateScreenSprite() {
+
+        BufferedImage output = spriteSheet.getSubimage(
+                (int)p.getX(), (int)p.getY(), (int)bounds.getWidth(), (int)bounds.getHeight()
+        );
+
+        return output;
+
+    } // generateScreenSprite
 
 } // SpriteView
