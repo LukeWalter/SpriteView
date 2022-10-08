@@ -1,11 +1,16 @@
 package spriteview;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class SpriteView extends JPanel {
 
-    OAM sprite;
+    OAM spriteRegister;
+    BufferedImage spriteSheet;
 
     public SpriteView(OAM sprite) {
 
@@ -14,7 +19,19 @@ public class SpriteView extends JPanel {
         this.setPreferredSize(new Dimension(256, 256));
         this.setBackground(Color.PINK);
 
-        this.sprite = sprite;
+        this.spriteRegister = sprite;
+
+        try {
+
+            File src = new File("res/donkeykong.bmp");
+            System.out.println(src.exists());
+            this.spriteSheet = ImageIO.read(src);
+            System.out.println(spriteSheet);
+
+        } catch (IOException ioe) {
+
+
+        } // try
 
     } // Constructor
 
@@ -30,12 +47,14 @@ public class SpriteView extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
+        g.drawImage(spriteSheet, 0, 0, this);
+
         g2d.setColor(Color.BLUE);
         g2d.setStroke(new BasicStroke(2f));
 
-        int tileID = sprite.baseIndex();
+        int tileID = spriteRegister.baseIndex();
         Point p = new Point((tileID % 32) * 8, (tileID / 32) * 8);
-        Dimension bounds = sprite.dimensions();
+        Dimension bounds = spriteRegister.dimensions();
 
         int x = (int)(p.getX());
         int y = (int)(p.getY());
