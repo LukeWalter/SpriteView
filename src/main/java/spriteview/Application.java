@@ -15,7 +15,7 @@ public class Application {
         frame.getContentPane().setLayout(new BorderLayout());
 
         frame.setTitle("GBA Spritesheet View -- Mode " + mode);
-        frame.setPreferredSize(new Dimension(900, 500));
+        frame.setPreferredSize(new Dimension(875, 500));
         frame.setResizable(false);
 
         JPanel panel = new JPanel(new BorderLayout());

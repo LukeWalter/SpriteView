@@ -12,6 +12,8 @@ public class RegisterView extends JPanel {
     private RegisterButton[] buttons;
     private JLabel title;
 
+    private JPanel categories;
+
     public RegisterView(Application app, OAM sprite) {
 
         super();
@@ -21,10 +23,11 @@ public class RegisterView extends JPanel {
         JPanel titleArea = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 5));
         titleArea.setBackground(Color.LIGHT_GRAY);
         JPanel attribute = new JPanel();
-        attribute.setBackground(Color.DARK_GRAY);
-        JPanel categories = new JPanel();
-        categories.setLayout(new BoxLayout(categories, BoxLayout.X_AXIS));
-        categories.setBackground(Color.GREEN);
+        attribute.setBackground(Color.BLACK);
+        categories = new JPanel();
+        categories.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        categories.setBackground(Color.BLACK);
+        this.addRegInfo(0);
 
         this.current = 0;
         JButton prev = new JButton("<<");
@@ -35,7 +38,7 @@ public class RegisterView extends JPanel {
         this.title = new JLabel();
         this.title.setForeground(Color.BLACK);
         this.title.setFont(new Font("Helvetica", Font.PLAIN, 30));
-        updateTitle();
+        this.updateTitle();
 
         titleArea.add(prev);
         titleArea.add(this.title);
@@ -59,7 +62,7 @@ public class RegisterView extends JPanel {
     public void reverseEndian() {
 
         for (int i = 0; i < buttons.length / 2; i++) {
-            swapButtons(i, buttons.length - 1 - i);
+            this.swapButtons(i, buttons.length - 1 - i);
 
         } // for
 
@@ -74,11 +77,11 @@ public class RegisterView extends JPanel {
 
     public void updateComponent() {
 
-        updateTitle();
-        updateOAM();
+        this.updateTitle();
+        this.updateOAM();
 
-        revalidate();
-        repaint();
+        this.revalidate();
+        this.repaint();
 
     } // updateComponent
 
@@ -113,7 +116,8 @@ public class RegisterView extends JPanel {
 
         } // for
 
-        updateComponent();
+        this.addRegInfo(current);
+        this.updateComponent();
 
     } // incrementCurrent
 
@@ -130,9 +134,58 @@ public class RegisterView extends JPanel {
 
         } // for
 
-        updateComponent();
+        this.addRegInfo(current);
+        this.updateComponent();
 
     } // decrementCurrent
+
+    public void addRegInfo(int register) {
+
+        categories.removeAll();
+
+        switch (register) {
+
+            case 0:
+                categories.add(this.generateAttrLabel("Shape", 100, Color.BLUE, Color.BLACK));
+                categories.add(this.generateAttrLabel("256", 50, Color.GREEN, Color.BLACK));
+                categories.add(this.generateAttrLabel("", 105, Color.BLACK, Color.BLACK));
+                categories.add(this.generateAttrLabel("α", 50, Color.GREEN, Color.BLACK));
+                categories.add(this.generateAttrLabel("OM", 105, Color.BLUE, Color.BLACK));
+                categories.add(this.generateAttrLabel("Row Location", 410, Color.GREEN, Color.BLACK));
+                break;
+            case 1:
+                categories.add(this.generateAttrLabel("Size", 100, Color.GREEN, Color.BLACK));
+                categories.add(this.generateAttrLabel("Flip", 100, Color.BLUE, Color.BLACK));
+                categories.add(this.generateAttrLabel("", 165, Color.BLACK, Color.BLACK));
+                categories.add(this.generateAttrLabel("Column Location", 460, Color.GREEN, Color.BLACK));
+                break;
+            case 2:
+                categories.add(this.generateAttrLabel("Sub-Palette", 200, Color.GREEN, Color.BLACK));
+                categories.add(this.generateAttrLabel("Priority", 110, Color.BLUE, Color.BLACK));
+                categories.add(this.generateAttrLabel("Tile ID", 510, Color.GREEN, Color.BLACK));
+                break;
+            case 3:
+                categories.add(this.generateAttrLabel("Leave this space alone!", 875, Color.BLACK, Color.WHITE));
+                break;
+            default:
+                break;
+
+        } // switch
+
+    } // addRegInfo
+
+    private JPanel generateAttrLabel(String text, int width, Color bkgdColor, Color textColor) {
+
+        JPanel attrPanel = new JPanel();
+        attrPanel.setPreferredSize(new Dimension(width, 36));
+        attrPanel.setBackground(bkgdColor);
+        JLabel attrLabel = new JLabel(text);
+        attrLabel.setFont(new Font("Helvetica", Font.PLAIN, 20));
+        attrLabel.setForeground(textColor);
+        attrPanel.add(attrLabel);
+        return attrPanel;
+
+    } // generateAttrLabel
 
     @Override
     public void paintComponent(Graphics g) {
