@@ -3,6 +3,8 @@ package spriteview;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -77,6 +79,22 @@ public class SpriteView extends JPanel {
         BufferedImage output = spriteSheet.getSubimage(
                 (int)p.getX(), (int)p.getY(), (int)bounds.getWidth(), (int)bounds.getHeight()
         );
+
+        if (spriteRegister.horizontalFlip()) {
+            AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+            tx.translate(-output.getWidth(null), 0);
+            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            output = op.filter(output, null);
+
+        } // if
+
+        if (spriteRegister.verticalFlip()) {
+            AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+            tx.translate(0, -output.getHeight(null));
+            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            output = op.filter(output, null);
+
+        } // if
 
         return output;
 
