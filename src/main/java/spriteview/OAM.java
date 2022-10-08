@@ -34,10 +34,10 @@ public class OAM {
         dimension[2][2] = new Dimension(16, 32);
         dimension[2][3] = new Dimension(32, 64);
 
-        dimension[2][0] = new Dimension(0, 0);
-        dimension[2][1] = new Dimension(0, 0);
-        dimension[2][2] = new Dimension(0, 0);
-        dimension[2][3] = new Dimension(0, 0);
+        dimension[3][0] = new Dimension(0, 0);
+        dimension[3][1] = new Dimension(0, 0);
+        dimension[3][2] = new Dimension(0, 0);
+        dimension[3][3] = new Dimension(0, 0);
 
     } // OAM
 

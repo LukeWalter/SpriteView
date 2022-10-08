@@ -5,14 +5,17 @@ import java.awt.*;
 
 public class RegisterView extends JPanel {
 
+    private Application app;
+
     private int current;
     private OAM sprite;
     private RegisterButton[] buttons;
     private JLabel title;
 
-    public RegisterView() {
+    public RegisterView(Application app, OAM sprite) {
 
         super();
+        this.app = app;
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         JPanel titleArea = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 5));
@@ -38,7 +41,7 @@ public class RegisterView extends JPanel {
         titleArea.add(this.title);
         titleArea.add(next);
 
-        this.sprite = new OAM();
+        this.sprite = sprite;
         this.buttons = new RegisterButton[16];
 
         for (int i = this.buttons.length - 1; i >= 0; i--) {
@@ -73,7 +76,7 @@ public class RegisterView extends JPanel {
 
         updateTitle();
         updateOAM();
-        System.out.println(sprite);
+
         revalidate();
         repaint();
 
@@ -93,14 +96,14 @@ public class RegisterView extends JPanel {
 
         } // for
 
-//        System.out.println(sprite);
+        app.update();
 
     } // updateRegister
 
     private void incrementCurrent() {
 
         current = (current + 5) % 4;
-        System.out.println(current);
+
         for (int i = 0; i < 16; i++) {
 
             RegisterButton b = buttons[i];
@@ -129,7 +132,7 @@ public class RegisterView extends JPanel {
 
         updateComponent();
 
-    } // incrementCurrent
+    } // decrementCurrent
 
     @Override
     public void paintComponent(Graphics g) {

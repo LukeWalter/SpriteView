@@ -5,6 +5,9 @@ import java.awt.*;
 
 public class Application {
 
+    ScreenView scv;
+    SpriteView spv;
+
     public Application(int mode) {
 
         JFrame frame = new JFrame();
@@ -18,11 +21,19 @@ public class Application {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.BLACK);
 
-        RegisterView rv = new RegisterView();
+        OAM spriteRegister = new OAM();
+
+        RegisterView rv = new RegisterView(this, spriteRegister);
         panel.add(rv);
 
-        JPanel screen = new JPanel(new FlowLayout());
+        JPanel screen = new JPanel(new FlowLayout(FlowLayout.CENTER, 60, 50));
         screen.setBackground(Color.WHITE);
+
+        this.spv = new SpriteView(spriteRegister);
+        this.scv = new ScreenView();
+
+        screen.add(scv, BorderLayout.CENTER);
+        screen.add(spv, BorderLayout.CENTER);
 
         frame.add(panel, BorderLayout.NORTH);
         frame.add(screen, BorderLayout.CENTER);
@@ -30,5 +41,10 @@ public class Application {
         frame.setVisible(true);
 
     } // Constructor
+
+    public void update() {
+        spv.updateComponent();
+
+    } // update
 
 } // Application
