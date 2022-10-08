@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -76,9 +78,28 @@ public class SpriteView extends JPanel {
 
     public BufferedImage generateScreenSprite() {
 
-        BufferedImage output = spriteSheet.getSubimage(
+        int background = spriteSheet.getRGB(0, 0);
+
+        if (spriteRegister.shape() == Shape.NOT_A_SHAPE || spriteRegister.objectMode() == OM.HIDE) {
+            return null;
+
+        } // if
+
+        BufferedImage output = deepCopy(spriteSheet.getSubimage(
                 (int)p.getX(), (int)p.getY(), (int)bounds.getWidth(), (int)bounds.getHeight()
-        );
+        ));
+
+        for (int r = 0; r < output.getHeight(); r++) {
+            for (int c = 0; c < output.getWidth(); c++) {
+
+                if (output.getRGB(r, c) == background) {
+                    output.setRGB(r, c, 0);
+
+                } // if
+
+            } // for
+
+        } // for
 
         if (spriteRegister.horizontalFlip()) {
             AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
@@ -99,5 +120,12 @@ public class SpriteView extends JPanel {
         return output;
 
     } // generateScreenSprite
+
+    private static BufferedImage deepCopy(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
 
 } // SpriteView
