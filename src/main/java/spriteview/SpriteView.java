@@ -7,9 +7,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
-import static spriteview.Utilities.deepCopy;
-import static spriteview.Utilities.getScaledImage;
+import static spriteview.Utilities.*;
 
 public class SpriteView extends JPanel {
 
@@ -85,12 +85,12 @@ public class SpriteView extends JPanel {
 
     } // paintComponent
 
-    public BufferedImage generateScreenSprite() {
+    public Optional<BufferedImage> generateScreenSprite() {
 
         int background = spriteSheet.getRGB(0, 0);
 
         if (spriteRegister.shape() == Shape.NOT_A_SHAPE || spriteRegister.objectMode() == OM.HIDE) {
-            return null;
+            return Optional.empty();
 
         } // if
 
@@ -99,18 +99,7 @@ public class SpriteView extends JPanel {
             BufferedImage output = deepCopy(spriteSheet.getSubimage(
                     (int) p.getX(), (int) p.getY(), (int) bounds.getWidth(), (int) bounds.getHeight()
             ));
-
-            for (int r = 0; r < output.getHeight(); r++) {
-                for (int c = 0; c < output.getWidth(); c++) {
-
-                    if (output.getRGB(c, r) == background) {
-                        output.setRGB(c, r, 0);
-                    } // if
-
-                } // for
-
-            } // for
-
+            
             if (spriteRegister.horizontalFlip()) {
                 AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
                 tx.translate(-output.getWidth(null), 0);
@@ -127,10 +116,10 @@ public class SpriteView extends JPanel {
 
             } // if
 
-            return output;
+            return Optional.of(makeColorTransparent(output, new Color(spriteSheet.getRGB(0, 0))));
 
         } catch (RasterFormatException rfe) {
-            return null;
+            return Optional.empty();
 
         } // try
 

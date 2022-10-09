@@ -1,10 +1,8 @@
 package spriteview;
 
+import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
+import java.awt.image.*;
 
 public class Utilities {
 
@@ -42,4 +40,46 @@ public class Utilities {
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
 
     } // deepCopy
+
+    /**
+     * Use this because Java sucks (or I'm stupid, either is possible)
+     * @param value The value to scale
+     * @param scaleFactor The scale factor to use
+     * @return The scaled integer, rounded if the scaling resulted in a decimal value
+     */
+    public static int scaleIntegerByFactor(int value, double scaleFactor) {
+        return (int) Math.round(value * scaleFactor);
+    }
+
+    public static BufferedImage makeColorTransparent(BufferedImage im, final Color color) {
+        ImageFilter filter = new RGBImageFilter() {
+
+            // the color we are looking for... Alpha bits are set to opaque
+            public final int markerRGB = color.getRGB() | 0xFF000000;
+
+            public final int filterRGB(int x, int y, int rgb) {
+                if ((rgb | 0xFF000000) == markerRGB) {
+                    // Mark the alpha bits as zero - transparent
+                    return 0x00FFFFFF & rgb;
+                } else {
+                    // nothing to do
+                    return rgb;
+                }
+            }
+        };
+
+        ImageProducer ip = new FilteredImageSource(im.getSource(), filter);
+        return imageToBufferedImage(Toolkit.getDefaultToolkit().createImage(ip),
+                im.getWidth(), im.getHeight());
+    }
+
+    public static BufferedImage imageToBufferedImage(Image image, int width, int height)
+    {
+        BufferedImage dest = new BufferedImage(
+                width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = dest.createGraphics();
+        g2.drawImage(image, 0, 0, null);
+        g2.dispose();
+        return dest;
+    }
 }
