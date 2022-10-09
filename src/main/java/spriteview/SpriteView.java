@@ -4,10 +4,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
+import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -85,40 +82,46 @@ public class SpriteView extends JPanel {
 
         } // if
 
-        BufferedImage output = deepCopy(spriteSheet.getSubimage(
-                (int)p.getX(), (int)p.getY(), (int)bounds.getWidth(), (int)bounds.getHeight()
-        ));
-        System.out.println("Width: " + bounds.getWidth() + ", " + output.getWidth());
-        System.out.println("Height: " + bounds.getHeight() + ", " + output.getHeight());
-//        for (int r = 0; r < output.getHeight(); r++) {
-//            for (int c = 0; c < output.getWidth(); c++) {
-//                System.out.println(r + " | " + c);
-//                if (output.getRGB(r, c) == background) {
-//                    output.setRGB(r, c, 0);
+        try {
+
+            BufferedImage output = deepCopy(spriteSheet.getSubimage(
+                    (int) p.getX(), (int) p.getY(), (int) bounds.getWidth(), (int) bounds.getHeight()
+            ));
+
+            for (int r = 0; r < output.getHeight(); r++) {
+                for (int c = 0; c < output.getWidth(); c++) {
+                    
+                    if (output.getRGB(c, r) == background) {
+                        output.setRGB(c, r, 0);
 //
-//                } // if
-//
-//            } // for
-//
-//        } // for
+                    } // if
 
-        if (spriteRegister.horizontalFlip()) {
-            AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
-            tx.translate(-output.getWidth(null), 0);
-            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-            output = op.filter(output, null);
+                } // for
 
-        } // if
+            } // for
 
-        if (spriteRegister.verticalFlip()) {
-            AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-            tx.translate(0, -output.getHeight(null));
-            AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-            output = op.filter(output, null);
+            if (spriteRegister.horizontalFlip()) {
+                AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+                tx.translate(-output.getWidth(null), 0);
+                AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+                output = op.filter(output, null);
 
-        } // if
+            } // if
 
-        return output;
+            if (spriteRegister.verticalFlip()) {
+                AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+                tx.translate(0, -output.getHeight(null));
+                AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+                output = op.filter(output, null);
+
+            } // if
+
+            return output;
+
+        } catch (RasterFormatException rfe) {
+            return null;
+
+        } // try
 
     } // generateScreenSprite
 
