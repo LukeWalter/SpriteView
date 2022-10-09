@@ -90,7 +90,7 @@ public class SpriteView extends JPanel {
 
             for (int r = 0; r < output.getHeight(); r++) {
                 for (int c = 0; c < output.getWidth(); c++) {
-                    
+
                     if (output.getRGB(c, r) == background) {
                         output.setRGB(c, r, 0);
 //
