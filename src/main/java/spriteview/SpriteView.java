@@ -7,6 +7,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
+
+import static spriteview.Utilities.*;
 
 public class SpriteView extends JPanel {
 
@@ -16,8 +19,10 @@ public class SpriteView extends JPanel {
     Point p;
     Dimension bounds;
 
-    public SpriteView(OAM sprite) {
+    private static double displayScaleFactor = 1;
+    private static final int MAXIMUM_DISPLAY_SCALE = 3;
 
+    public SpriteView(OAM sprite) {
         super();
 
         this.setPreferredSize(new Dimension(256, 256));
@@ -26,17 +31,22 @@ public class SpriteView extends JPanel {
         this.spriteRegister = sprite;
 
         try {
-
-            File src = new File("res/donkeykong.bmp");
+            File src = new File("res/donkeykong.png");
             this.spriteSheet = ImageIO.read(src);
-
-        } catch (IOException ioe) {
+        } catch (IOException ignored) {
         } // try
 
         p = new Point(0, 0);
         bounds = new Dimension(8, 8);
-
     } // Constructor
+
+    public void adjustScaleDisplayFactor(double amount) {
+        displayScaleFactor = Math.max(1, Math.min(displayScaleFactor + amount,
+                MAXIMUM_DISPLAY_SCALE));
+        this.setPreferredSize(new Dimension((int) Math.round(256 * displayScaleFactor),
+                (int) Math.round(256 * displayScaleFactor)));
+        updateComponent();
+    }
 
     public void updateComponent() {
 
@@ -49,22 +59,24 @@ public class SpriteView extends JPanel {
 
     } // updateComponent
 
+
     @Override
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        g.drawImage(spriteSheet, 0, 0, this);
+        g.drawImage(getScaledImage(spriteSheet, (int) Math.round(256 * displayScaleFactor),
+                (int) Math.round(256 * displayScaleFactor)), 0, 0, this);
 
         g2d.setColor(Color.BLUE);
         g2d.setStroke(new BasicStroke(2f));
 
-        int x = (int)(p.getX());
-        int y = (int)(p.getY());
+        int x = (int)(p.getX() * displayScaleFactor);
+        int y = (int)(p.getY() * displayScaleFactor);
 
-        int width = (int)(bounds.getWidth());
-        int height = (int)(bounds.getHeight());
+        int width = (int)(bounds.getWidth() * displayScaleFactor);
+        int height = (int)(bounds.getHeight() * displayScaleFactor);
 
         g2d.drawLine(x, y, x, y + height);
         g2d.drawLine(x, y + height, x + width, y + height);
@@ -73,12 +85,12 @@ public class SpriteView extends JPanel {
 
     } // paintComponent
 
-    public BufferedImage generateScreenSprite() {
+    public Optional<BufferedImage> generateScreenSprite() {
 
         int background = spriteSheet.getRGB(0, 0);
 
         if (spriteRegister.shape() == Shape.NOT_A_SHAPE || spriteRegister.objectMode() == OM.HIDE) {
-            return null;
+            return Optional.empty();
 
         } // if
 
@@ -87,19 +99,7 @@ public class SpriteView extends JPanel {
             BufferedImage output = deepCopy(spriteSheet.getSubimage(
                     (int) p.getX(), (int) p.getY(), (int) bounds.getWidth(), (int) bounds.getHeight()
             ));
-
-            for (int r = 0; r < output.getHeight(); r++) {
-                for (int c = 0; c < output.getWidth(); c++) {
-
-                    if (output.getRGB(c, r) == background) {
-                        output.setRGB(c, r, 0);
-//
-                    } // if
-
-                } // for
-
-            } // for
-
+            
             if (spriteRegister.horizontalFlip()) {
                 AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
                 tx.translate(-output.getWidth(null), 0);
@@ -116,23 +116,13 @@ public class SpriteView extends JPanel {
 
             } // if
 
-            return output;
+            return Optional.of(makeColorTransparent(output, new Color(spriteSheet.getRGB(0, 0))));
 
         } catch (RasterFormatException rfe) {
-            return null;
+            return Optional.empty();
 
         } // try
 
     } // generateScreenSprite
-
-    // Credit to user1050755!
-    // https://stackoverflow.com/questions/3514158/how-do-you-clone-a-bufferedimage
-    private static BufferedImage deepCopy(BufferedImage bi) {
-        ColorModel cm = bi.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(bi.getRaster().createCompatibleWritableRaster());
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-
-    } // deepCopy
 
 } // SpriteView

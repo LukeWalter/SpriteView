@@ -4,8 +4,8 @@ import java.awt.Dimension;
 
 public class OAM {
 
-    private Register[] attribute;
-    private Dimension[][] dimension;
+    private final Register[] attribute;
+    private final Dimension[][] dimension;
 
     public OAM() {
 

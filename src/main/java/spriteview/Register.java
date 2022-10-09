@@ -2,7 +2,7 @@ package spriteview;
 
 public class Register {
 
-    private boolean[] bits;
+    private final boolean[] bits;
     private boolean bigEndian;
 
     public Register() {
@@ -67,26 +67,19 @@ public class Register {
     @Override
     public String toString() {
 
-        String output = "";
+        StringBuilder output = new StringBuilder();
 
         if (bigEndian) {
-
             for (int i = bits.length - 1; i > -1; i--) {
-                output += (bits[i]) ? "1" : "0";
-
+                output.append((bits[i]) ? "1" : "0");
             } // for
-
         } else {
-
-            for (int i = 0; i < bits.length; i++) {
-                output += (bits[i]) ? "1" : "0";
-
+            for (boolean bit : bits) {
+                output.append(bit ? "1" : "0");
             } // for
-
         } // if
 
-        return output;
-
+        return output.toString();
     } // toString
 
 } // Register

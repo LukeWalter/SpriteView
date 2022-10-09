@@ -5,8 +5,8 @@ import java.awt.*;
 
 public class Application {
 
-    ScreenView scv;
-    SpriteView spv;
+    ScreenView screenView;
+    SpriteView spriteView;
 
     public Application(int mode) {
 
@@ -15,8 +15,9 @@ public class Application {
         frame.getContentPane().setLayout(new BorderLayout());
 
         frame.setTitle("GBA Spritesheet View -- Mode " + mode);
+        frame.setMinimumSize(new Dimension(875, 575));
         frame.setPreferredSize(new Dimension(875, 575));
-        frame.setResizable(false);
+        frame.setResizable(true);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.BLACK);
@@ -29,22 +30,55 @@ public class Application {
         JPanel screen = new JPanel(new FlowLayout(FlowLayout.CENTER, 60, 50));
         screen.setBackground(Color.WHITE);
 
-        this.spv = new SpriteView(spriteRegister);
-        this.scv = new ScreenView(spv, spriteRegister);
+        this.spriteView = new SpriteView(spriteRegister);
+        this.screenView = new ScreenView(spriteView, spriteRegister);
 
-        screen.add(scv, BorderLayout.CENTER);
-        screen.add(spv, BorderLayout.CENTER);
+        JPanel scaleButtonsArea = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+
+        JButton reduceScale = new JButton("-");
+        reduceScale.addActionListener(e -> {
+            spriteView.adjustScaleDisplayFactor(-0.5);
+            screenView.adjustScaleDisplayFactor(-0.5);
+        });
+        scaleButtonsArea.add(reduceScale);
+
+        JButton increaseScale = new JButton("+");
+        increaseScale.addActionListener(e -> {
+                    spriteView.adjustScaleDisplayFactor(0.5);
+                    screenView.adjustScaleDisplayFactor(0.5);
+                });
+        scaleButtonsArea.add(increaseScale);
+
+        JPanel spriteViewPanel = new JPanel();
+        spriteViewPanel.setLayout(new BoxLayout(spriteViewPanel, BoxLayout.PAGE_AXIS));
+
+        JPanel screenViewPanel = new JPanel();
+        screenViewPanel.setLayout(new BoxLayout(screenViewPanel, BoxLayout.PAGE_AXIS));
+
+        spriteViewPanel.add(spriteView, BorderLayout.CENTER);
+        spriteViewPanel.add(scaleButtonsArea, BorderLayout.CENTER);
+
+        screenViewPanel.add(screenView, BorderLayout.CENTER);
+
+
+        screen.add(screenViewPanel);
+        screen.add(spriteViewPanel);
 
         frame.add(panel, BorderLayout.NORTH);
-        frame.add(screen, BorderLayout.CENTER);
+
+        JScrollPane scrPane = new JScrollPane(screen);
+        scrPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrPane.getHorizontalScrollBar().setUnitIncrement(16);
+
+        frame.add(scrPane);
         frame.pack();
         frame.setVisible(true);
 
     } // Constructor
 
     public void update() {
-        spv.updateComponent();
-        scv.updateComponent();
+        spriteView.updateComponent();
+        screenView.updateComponent();
 
     } // update
 
