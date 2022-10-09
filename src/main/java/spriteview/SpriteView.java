@@ -88,18 +88,19 @@ public class SpriteView extends JPanel {
         BufferedImage output = deepCopy(spriteSheet.getSubimage(
                 (int)p.getX(), (int)p.getY(), (int)bounds.getWidth(), (int)bounds.getHeight()
         ));
-
-        for (int r = 0; r < output.getHeight(); r++) {
-            for (int c = 0; c < output.getWidth(); c++) {
-
-                if (output.getRGB(r, c) == background) {
-                    output.setRGB(r, c, 0);
-
-                } // if
-
-            } // for
-
-        } // for
+        System.out.println("Width: " + bounds.getWidth() + ", " + output.getWidth());
+        System.out.println("Height: " + bounds.getHeight() + ", " + output.getHeight());
+//        for (int r = 0; r < output.getHeight(); r++) {
+//            for (int c = 0; c < output.getWidth(); c++) {
+//                System.out.println(r + " | " + c);
+//                if (output.getRGB(r, c) == background) {
+//                    output.setRGB(r, c, 0);
+//
+//                } // if
+//
+//            } // for
+//
+//        } // for
 
         if (spriteRegister.horizontalFlip()) {
             AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
@@ -121,11 +122,14 @@ public class SpriteView extends JPanel {
 
     } // generateScreenSprite
 
+    // Credit to user1050755!
+    // https://stackoverflow.com/questions/3514158/how-do-you-clone-a-bufferedimage
     private static BufferedImage deepCopy(BufferedImage bi) {
         ColorModel cm = bi.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(null);
+        WritableRaster raster = bi.copyData(bi.getRaster().createCompatibleWritableRaster());
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-    }
+
+    } // deepCopy
 
 } // SpriteView
