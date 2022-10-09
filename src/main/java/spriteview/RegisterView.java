@@ -5,14 +5,14 @@ import java.awt.*;
 
 public class RegisterView extends JPanel {
 
-    private Application app;
+    private final Application app;
 
-    private int current;
-    private OAM sprite;
-    private RegisterButton[] buttons;
-    private JLabel title;
+    private int currentRegister;
+    private final OAM sprite;
+    private final RegisterButton[] buttons;
+    private final JLabel title;
 
-    private JPanel categories;
+    private final JPanel categories;
 
     public RegisterView(Application app, OAM sprite) {
 
@@ -29,7 +29,7 @@ public class RegisterView extends JPanel {
         categories.setBackground(Color.BLACK);
         this.addRegInfo(0);
 
-        this.current = 0;
+        this.currentRegister = 0;
         JButton prev = new JButton("<<");
         prev.addActionListener(e -> decrementCurrent());
         JButton next = new JButton(">>");
@@ -86,13 +86,13 @@ public class RegisterView extends JPanel {
     } // updateComponent
 
     private void updateTitle() {
-        title.setText("Attribute " + current);
+        title.setText("Attribute " + currentRegister);
 
     } // updateText
 
     private void updateOAM() {
 
-        Register reg = sprite.attr(current);
+        Register reg = sprite.attr(currentRegister);
 
         for (int i = 0; i < 16; i++) {
             reg.setBit(i, buttons[i].isOn());
@@ -105,36 +105,36 @@ public class RegisterView extends JPanel {
 
     private void incrementCurrent() {
 
-        current = (current + 5) % 4;
+        currentRegister = (currentRegister + 5) % 4;
 
         for (int i = 0; i < 16; i++) {
 
             RegisterButton b = buttons[i];
 
-            b.setOn(sprite.attr(current).getBit(i));
+            b.setOn(sprite.attr(currentRegister).getBit(i));
             b.setText((b.isOn()) ? "1" : "0");
 
         } // for
 
-        this.addRegInfo(current);
+        this.addRegInfo(currentRegister);
         this.updateComponent();
 
     } // incrementCurrent
 
     private void decrementCurrent() {
 
-        current = (current + 3) % 4;
+        currentRegister = (currentRegister + 3) % 4;
 
         for (int i = 0; i < 16; i++) {
 
             RegisterButton b = buttons[i];
 
-            b.setOn(sprite.attr(current).getBit(i));
+            b.setOn(sprite.attr(currentRegister).getBit(i));
             b.setText((b.isOn()) ? "1" : "0");
 
         } // for
 
-        this.addRegInfo(current);
+        this.addRegInfo(currentRegister);
         this.updateComponent();
 
     } // decrementCurrent

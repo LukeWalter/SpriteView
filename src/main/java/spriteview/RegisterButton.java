@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class RegisterButton extends JButton {
 
-    private int index;
+    private final int index;
     private boolean on;
 
     public RegisterButton(RegisterView view, int index) {

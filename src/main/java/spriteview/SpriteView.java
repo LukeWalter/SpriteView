@@ -8,6 +8,9 @@ import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
 
+import static spriteview.Utilities.deepCopy;
+import static spriteview.Utilities.getScaledImage;
+
 public class SpriteView extends JPanel {
 
     OAM spriteRegister;
@@ -16,8 +19,10 @@ public class SpriteView extends JPanel {
     Point p;
     Dimension bounds;
 
-    public SpriteView(OAM sprite) {
+    private static double displayScaleFactor = 1;
+    private static final int MAXIMUM_DISPLAY_SCALE = 3;
 
+    public SpriteView(OAM sprite) {
         super();
 
         this.setPreferredSize(new Dimension(256, 256));
@@ -26,17 +31,22 @@ public class SpriteView extends JPanel {
         this.spriteRegister = sprite;
 
         try {
-
-            File src = new File("res/donkeykong.bmp");
+            File src = new File("res/donkeykong.png");
             this.spriteSheet = ImageIO.read(src);
-
-        } catch (IOException ioe) {
+        } catch (IOException ignored) {
         } // try
 
         p = new Point(0, 0);
         bounds = new Dimension(8, 8);
-
     } // Constructor
+
+    public void adjustScaleDisplayFactor(double amount) {
+        displayScaleFactor = Math.max(1, Math.min(displayScaleFactor + amount,
+                MAXIMUM_DISPLAY_SCALE));
+        this.setPreferredSize(new Dimension((int) Math.round(256 * displayScaleFactor),
+                (int) Math.round(256 * displayScaleFactor)));
+        updateComponent();
+    }
 
     public void updateComponent() {
 
@@ -49,22 +59,24 @@ public class SpriteView extends JPanel {
 
     } // updateComponent
 
+
     @Override
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        g.drawImage(spriteSheet, 0, 0, this);
+        g.drawImage(getScaledImage(spriteSheet, (int) Math.round(256 * displayScaleFactor),
+                (int) Math.round(256 * displayScaleFactor)), 0, 0, this);
 
         g2d.setColor(Color.BLUE);
         g2d.setStroke(new BasicStroke(2f));
 
-        int x = (int)(p.getX());
-        int y = (int)(p.getY());
+        int x = (int)(p.getX() * displayScaleFactor);
+        int y = (int)(p.getY() * displayScaleFactor);
 
-        int width = (int)(bounds.getWidth());
-        int height = (int)(bounds.getHeight());
+        int width = (int)(bounds.getWidth() * displayScaleFactor);
+        int height = (int)(bounds.getHeight() * displayScaleFactor);
 
         g2d.drawLine(x, y, x, y + height);
         g2d.drawLine(x, y + height, x + width, y + height);
@@ -93,7 +105,6 @@ public class SpriteView extends JPanel {
 
                     if (output.getRGB(c, r) == background) {
                         output.setRGB(c, r, 0);
-//
                     } // if
 
                 } // for
@@ -124,15 +135,5 @@ public class SpriteView extends JPanel {
         } // try
 
     } // generateScreenSprite
-
-    // Credit to user1050755!
-    // https://stackoverflow.com/questions/3514158/how-do-you-clone-a-bufferedimage
-    private static BufferedImage deepCopy(BufferedImage bi) {
-        ColorModel cm = bi.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(bi.getRaster().createCompatibleWritableRaster());
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-
-    } // deepCopy
 
 } // SpriteView
