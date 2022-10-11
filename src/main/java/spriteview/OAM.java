@@ -95,6 +95,11 @@ public class OAM {
 
     } // verticalFlip
 
+    public int affineMatrix() {
+        return attribute[1].getValueBetween(9, 14);
+
+    } // affineMatrix
+
     public int size() {
         return attribute[1].getValueBetween(14, 16);
 

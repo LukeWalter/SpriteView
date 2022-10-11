@@ -66,7 +66,7 @@ public class Utilities {
         return (int) Math.round(value * scaleFactor);
     }
 
-    public static BufferedImage makeColorTransparent(BufferedImage im, final Color color) {System.out.println("Hi");
+    public static BufferedImage makeColorTransparent(BufferedImage im, final Color color) {
         ImageFilter filter = new RGBImageFilter() {
 
             // the color we are looking for... Alpha bits are set to opaque

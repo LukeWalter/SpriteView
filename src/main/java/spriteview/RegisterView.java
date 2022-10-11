@@ -155,8 +155,16 @@ public class RegisterView extends JPanel {
                 break;
             case 1:
                 categories.add(this.generateAttrLabel("Size", 100, Color.GREEN, Color.BLACK));
-                categories.add(this.generateAttrLabel("Flip", 100, Color.BLUE, Color.BLACK));
-                categories.add(this.generateAttrLabel("", 165, Color.BLACK, Color.BLACK));
+
+                if (sprite.objectMode() == OM.AFFINE || sprite.objectMode() == OM.DOUBLE_AFFINE) {
+                    categories.add(this.generateAttrLabel("Affine Matrix", 265, Color.BLUE, Color.BLACK));
+
+                } else {
+                    categories.add(this.generateAttrLabel("Flip", 100, Color.BLUE, Color.BLACK));
+                    categories.add(this.generateAttrLabel("", 165, Color.BLACK, Color.BLACK));
+
+                } // if
+
                 categories.add(this.generateAttrLabel("Column Location", 460, Color.GREEN, Color.BLACK));
                 break;
             case 2:
