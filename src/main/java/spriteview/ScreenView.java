@@ -3,6 +3,7 @@ package spriteview;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import static spriteview.Utilities.getScaledImage;
 import static spriteview.Utilities.scaleIntegerByFactor;
@@ -59,25 +60,165 @@ public class ScreenView extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+
         super.paintComponent(g);
 
         if (spriteToDisplay != null) {
-            BufferedImage scaledSprite = getScaledImage(spriteToDisplay,
-                    scaleIntegerByFactor(spriteToDisplay.getWidth(), displayScaleFactor),
-                    scaleIntegerByFactor(spriteToDisplay.getHeight(), displayScaleFactor));
 
-            int backgroundColor = scaledSprite.getRGB(0, 0);
-            for (int r = 0; r < scaledSprite.getHeight(); r++) {
-                for (int c = 0; c < scaledSprite.getWidth(); c++) {
-                    if (scaledSprite.getRGB(c, r) == backgroundColor) {
-                        scaledSprite.setRGB(c, r, 0);
+            ArrayList<Utilities.Triple<BufferedImage, Integer, Integer>> scaledSprites = this.split();
+
+            for (Utilities.Triple<BufferedImage, Integer, Integer> s : scaledSprites) {
+
+                int backgroundColor = s.a.getRGB(0, 0);
+                for (int r = 0; r < s.a.getHeight(); r++) {
+                    for (int c = 0; c < s.a.getWidth(); c++) {
+                        if (s.a.getRGB(c, r) == backgroundColor) {
+                            s.a.setRGB(c, r, 0);
+                        }
                     }
                 }
-            }
 
-            g.drawImage(scaledSprite, scaleIntegerByFactor(sprite.column(), displayScaleFactor),
-                    scaleIntegerByFactor(sprite.row(), displayScaleFactor), this);
+                g.drawImage(
+                        s.a,
+                        scaleIntegerByFactor(s.b % 512, displayScaleFactor),
+                        scaleIntegerByFactor(s.c % 256, displayScaleFactor),
+                        this
+                );
+
+            } // for
+
         }
     } // paintComponent
+
+    private ArrayList<Utilities.Triple<BufferedImage, Integer, Integer>> split() {
+
+        ArrayList<Utilities.Triple<BufferedImage, Integer, Integer>> scaledSprites = new ArrayList<>();
+
+        int spriteColumn = sprite.column() % 512;
+        int spriteRow = sprite.row() % 256;
+
+        Dimension sd = sprite.dimensions();
+        int spriteWidth = (int)sd.getWidth();
+        int spriteHeight = (int)sd.getHeight();
+
+        boolean splitHorizontally = (spriteColumn + spriteWidth > 512);
+        boolean splitVertically = (spriteRow + spriteHeight > 256);
+
+        if (splitHorizontally && splitVertically) {
+
+            int width1 = 512 - spriteColumn;
+            int width2 = spriteWidth - width1;
+
+            int height1 = 256 - spriteRow;
+            int height2 = spriteHeight - height1;
+
+            BufferedImage scaledSprite1 = getScaledImage(
+                    spriteToDisplay.getSubimage(
+                            0, 0,
+                            width1, height1
+                    ),
+                    scaleIntegerByFactor(width1, displayScaleFactor),
+                    scaleIntegerByFactor(height1, displayScaleFactor)
+            );
+
+            BufferedImage scaledSprite2 = getScaledImage(
+                    spriteToDisplay.getSubimage(
+                            width1, 0,
+                            width2, height1
+                    ),
+                    scaleIntegerByFactor(width2, displayScaleFactor),
+                    scaleIntegerByFactor(height1, displayScaleFactor)
+            );
+
+            BufferedImage scaledSprite3 = getScaledImage(
+                    spriteToDisplay.getSubimage(
+                            0, height1,
+                            width1, height2
+                    ),
+                    scaleIntegerByFactor(width1, displayScaleFactor),
+                    scaleIntegerByFactor(height2, displayScaleFactor)
+            );
+
+            BufferedImage scaledSprite4 = getScaledImage(
+                    spriteToDisplay.getSubimage(
+                            width1, height1,
+                            width2, height2
+                    ),
+                    scaleIntegerByFactor(width2, displayScaleFactor),
+                    scaleIntegerByFactor(height2, displayScaleFactor)
+            );
+
+            scaledSprites.add(new Utilities.Triple(scaledSprite1, sprite.column(), sprite.row()));
+            scaledSprites.add(new Utilities.Triple(scaledSprite2, sprite.column() + width1, sprite.row()));
+            scaledSprites.add(new Utilities.Triple(scaledSprite3, sprite.column(), sprite.row() + height1));
+            scaledSprites.add(new Utilities.Triple(scaledSprite4, sprite.column() + width1, sprite.row() + height1));
+
+        } else if (splitHorizontally) {
+
+            int width1 = 512 - spriteColumn;
+            int width2 = spriteWidth - width1;
+
+            BufferedImage scaledSprite1 = getScaledImage(
+                    spriteToDisplay.getSubimage(
+                            0, 0,
+                            width1, spriteToDisplay.getHeight()
+                    ),
+                    scaleIntegerByFactor(width1, displayScaleFactor),
+                    scaleIntegerByFactor(spriteToDisplay.getHeight(), displayScaleFactor)
+            );
+
+            BufferedImage scaledSprite2 = getScaledImage(
+                    spriteToDisplay.getSubimage(
+                            width1, 0,
+                            width2, spriteToDisplay.getHeight()
+                    ),
+                    scaleIntegerByFactor(width2, displayScaleFactor),
+                    scaleIntegerByFactor(spriteToDisplay.getHeight(), displayScaleFactor)
+            );
+
+            scaledSprites.add(new Utilities.Triple(scaledSprite1, sprite.column(), sprite.row()));
+            scaledSprites.add(new Utilities.Triple(scaledSprite2, sprite.column() + width1, sprite.row()));
+
+        } else if (splitVertically) {
+
+            int height1 = 256 - spriteRow;
+            int height2 = spriteHeight - height1;
+
+            BufferedImage scaledSprite1 = getScaledImage(
+                    spriteToDisplay.getSubimage(
+                            0, 0,
+                            spriteToDisplay.getWidth(), height1
+                    ),
+                    scaleIntegerByFactor(spriteToDisplay.getWidth(), displayScaleFactor),
+                    scaleIntegerByFactor(height1, displayScaleFactor)
+            );
+
+            BufferedImage scaledSprite2 = getScaledImage(
+                    spriteToDisplay.getSubimage(
+                            0, height1,
+                            spriteToDisplay.getWidth(), height2
+                    ),
+                    scaleIntegerByFactor(spriteToDisplay.getWidth(), displayScaleFactor),
+                    scaleIntegerByFactor(height2, displayScaleFactor)
+            );
+
+            scaledSprites.add(new Utilities.Triple(scaledSprite1, sprite.column(), sprite.row()));
+            scaledSprites.add(new Utilities.Triple(scaledSprite2, sprite.column(), sprite.row() + height1));
+
+        } else {
+
+            BufferedImage scaledSprite = getScaledImage(
+                    spriteToDisplay,
+                    scaleIntegerByFactor(spriteToDisplay.getWidth(), displayScaleFactor),
+                    scaleIntegerByFactor(spriteToDisplay.getHeight(), displayScaleFactor)
+            );
+
+            scaledSprites.add(new Utilities.Triple(scaledSprite, sprite.column(), sprite.row()));
+
+        } // if
+//
+        return scaledSprites;
+
+    } // split
 
 } // ScreenView

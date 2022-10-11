@@ -87,8 +87,6 @@ public class SpriteView extends JPanel {
 
     public Optional<BufferedImage> generateScreenSprite() {
 
-        int background = spriteSheet.getRGB(0, 0);
-
         if (spriteRegister.shape() == Shape.NOT_A_SHAPE || spriteRegister.objectMode() == OM.HIDE) {
             return Optional.empty();
 

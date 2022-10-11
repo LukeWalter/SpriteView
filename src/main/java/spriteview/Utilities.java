@@ -6,6 +6,21 @@ import java.awt.image.*;
 
 public class Utilities {
 
+    public static class Triple<A, B, C> {
+
+        public A a;
+        public B b;
+        public C c;
+
+        public Triple(A a, B b, C c) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+
+        } // Constructor
+
+    } // Triple
+
     /**
      * Returns a BufferedImage of the original image scaled to the passed in width and height.
      * @param image Source image to be scaled
@@ -51,7 +66,7 @@ public class Utilities {
         return (int) Math.round(value * scaleFactor);
     }
 
-    public static BufferedImage makeColorTransparent(BufferedImage im, final Color color) {
+    public static BufferedImage makeColorTransparent(BufferedImage im, final Color color) {System.out.println("Hi");
         ImageFilter filter = new RGBImageFilter() {
 
             // the color we are looking for... Alpha bits are set to opaque
